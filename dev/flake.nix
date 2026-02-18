@@ -29,6 +29,12 @@
                     --tmpfs /tmp \
                     \
                     --ro-bind "/nix/store" "/nix/store"           \
+                    --ro-bind /bin /bin                           \
+                    --ro-bind /usr /usr                           \
+                    --ro-bind /lib64 /lib64                       \
+                    --ro-bind /etc/resolv.conf /etc/resolv.conf   \
+                    --ro-bind /etc/ssl /etc/ssl                   \
+                    --ro-bind /etc/static/ssl /etc/static/ssl     \
                     --bind "$EMU_HOME" "$HOME"                    \
                     --bind "$PWD" "$PWD"                          \
                     --ro-bind "$PWD/flake.nix" "$PWD/flake.nix"   \
