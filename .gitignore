@@ -1,0 +1,6 @@
+**
+.*
+!.gitignore
+!flake.nix
+!dev/
+!dev/**
