@@ -8,9 +8,9 @@
         devShells.${system}.default = pkgs.mkShell {
             packages = [];
 
-            # TODO: run checks and ensure env's are valid etc
-            # fail with exit rather than enter a broken state
+            # TODO: validate env and values
             shellHook = /*bash*/ ''
+                NIX_FRAGMENT="default"
                 EMU_HOME="$PWD/.devshells/home/$USER"
                 PROGRAM="$TERM"
                 BWRAP_ARGS=(
@@ -35,7 +35,7 @@
                     --chdir "$PWD" \
                 )
 
-                if [ ! -d "$EMU_HOME" ]; then
+                if [[ ! -d "$EMU_HOME" ]]; then
                     mkdir -p "$EMU_HOME"
                 fi
 
