@@ -28,9 +28,11 @@
                     --proc /proc \
                     --tmpfs /tmp \
                     \
-                    --ro-bind "/nix/store" "/nix/store" \
-                    --bind "$EMU_HOME" "$HOME"          \
-                    --bind "$PWD" "$PWD"                \
+                    --ro-bind "/nix/store" "/nix/store"           \
+                    --bind "$EMU_HOME" "$HOME"                    \
+                    --bind "$PWD" "$PWD"                          \
+                    --ro-bind "$PWD/flake.nix" "$PWD/flake.nix"   \
+                    --ro-bind "$PWD/flake.lock" "$PWD/flake.lock" \
                     \
                     --chdir "$PWD" \
                 )
@@ -47,10 +49,12 @@
                 done
                 
                 if [[ -f ./devshellshook.sh ]]; then
+                    BWRAP_ARGS+=(--ro-bind "$PWD/devshellshook.sh" "$PWD/devshellshook.sh")
                     source ./devshellshook.sh
                 fi
 
                 if [[ -f ./.devshellshook.sh ]]; then
+                    BWRAP_ARGS+=(--ro-bind "$PWD/.devshellshook.sh" "$PWD/.devshellshook.sh")
                     source ./.devshellshook.sh
                 fi
 
