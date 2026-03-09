@@ -14,11 +14,19 @@ layout {
         children
     }
 
-    tab name="1 Editor" borderless=true focus=true {
-        pane borderless=true command="nvim"
+    tab name="" focus=true {
+        pane borderless=true start_suspended=true command="nvim"
     }
 
-    tab name="2 Run" split_direction="horizontal" {
-        pane cwd="" command="clear" start_suspended=true
+    tab name="" split_direction="horizontal" {
+        pane /* name="default" start_suspended=true cwd="" command="" {
+            args ""
+        }*/
+    }
+
+    tab name="󱚠" split_direction="horizontal" {
+        pane name="clanker" start_suspended=true command="nix" {
+            args "run" "--inputs-from" "." "nixpkgs#opencode"
+        }
     }
 }
