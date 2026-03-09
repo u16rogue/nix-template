@@ -86,6 +86,8 @@ BWRAP_ARGS+=( \
             experimental-features = nix-command flakes
         " \
 )
+# ISSUE: creates /nix/var which make nix run try to use `/nix/store` which fails
+# as we intentionally set it to read only
 #           extra-substituters = local
 #           trusted-substituters = local
 
