@@ -14,19 +14,19 @@ layout {
         children
     }
 
-    tab name="" focus=true {
+    tab name=" " focus=true {
         pane borderless=true start_suspended=true command="nvim"
     }
 
-    tab name="" split_direction="horizontal" {
+    tab name=" " split_direction="horizontal" {
         pane /* name="default" start_suspended=true cwd="" command="" {
             args ""
         }*/
     }
 
-    tab name="󱚠" split_direction="horizontal" {
+    tab name="󱚠 " split_direction="horizontal" {
         pane name="clanker" start_suspended=true command="nix" {
-            args "run" "--inputs-from" "." "nixpkgs#opencode"
+            args "--extra-experimental-features" "flakes" "--extra-experimental-features" "nix-command" "run" "--inputs-from" "." "nixpkgs#opencode"
         }
     }
 }
