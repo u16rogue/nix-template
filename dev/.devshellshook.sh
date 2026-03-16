@@ -16,7 +16,6 @@ assert_command() {
 
 assert_env() {
     local var_name="$1"
-    local value="${!var_name}"
 
     if [[ -z "$var_name" ]]; then
         echo "[error] no variable name provided" >&2
@@ -28,6 +27,7 @@ assert_env() {
         exit 1
     fi
 
+    local value="${!var_name}"
     if [[ -z "$value" ]]; then
         echo "[error] '$var_name' is set but empty" >&2
         exit 1
@@ -96,6 +96,7 @@ BWRAP_ARGS=( \
     --bind "$EMU_DIR_ROOT" "/"      \
     --bind "$EMU_DIR_HOME" "$HOME"  \
     --bind "$PWD" "$PWD"            \
+    --ro-bind "$EMU_DIR" "$EMU_DIR" \
 )
 
 # --- NO `--bind` BEYOND THIS POINT ---
@@ -128,9 +129,9 @@ BWRAP_ARGS+=( \
     --ro-bind "$(realpath /usr/bin/env)" /usr/bin/env \
 )
 
-readarray -d ':' -t host_paths <<< "$PATH"
-for host_path in "''${host_paths[@]}"; do
-    if [[ -e "$host_path" ]]; then
+IFS=':' read -ra host_paths <<< "$PATH"
+for host_path in "${host_paths[@]}"; do
+    if [[ -e "$host_path" && "$host_path" != "$PWD"/* ]]; then
         BWRAP_ARGS+=(--ro-bind "$host_path" "$host_path")
     fi
 done
@@ -146,7 +147,8 @@ BWRAP_ARGS+=( \
 # Setup user
 NOLOGIN="$(realpath "$(which "nologin")")"
 if [[ ! -f "$NOLOGIN" ]]; then
-    echo "[error] invalid nologin: '$NOLOGIN'"
+    echo "[error] invalid nologin: '$NOLOGIN'" >&2
+    exit 1
 fi
 
 EMU_PASSWD="$EMU_DIR/passwd"
@@ -168,6 +170,8 @@ BWRAP_ARGS+=( \
     --ro-bind "$PWD/flake.nix" "$PWD/flake.nix"                 \
     --ro-bind "$PWD/flake.lock" "$PWD/flake.lock"               \
     --ro-bind "$PWD/.devshellshook.sh" "$PWD/.devshellshook.sh" \
+    --ro-bind "$PWD/.devshellspkgs.ls" "$PWD/.devshellspkgs.ls" \
+    --ro-bind "$PWD/.zellij.kdl" "$PWD/.zellij.kdl" \
 )
 
 # Setup development and nix env's
@@ -202,16 +206,25 @@ fi
 
 # ====================================================================================================
 
-BWRAP_ARGS+=(\
-    --ro-bind "$EMU_DIR" "$EMU_DIR" \
+BWRAP_ARGS+=("--")
+
+EXTRA_PACKAGES=()
+if [[ -f "$PWD/.devshellspkgs.ls" ]]; then
+    mapfile -t EXTRA_PACKAGES < "$PWD/.devshellspkgs.ls"
+fi
+
+if [[ ${#EXTRA_PACKAGES[@]} -gt 0 ]]; then
+    BWRAP_ARGS+=( \
+        nix --extra-experimental-features "flakes" --extra-experimental-features "nix-command" shell --inputs-from . "${EXTRA_PACKAGES[@]}" --command \
+    )
+fi
+
+BWRAP_ARGS+=( \
+    "$PROGRAM" \
+    "${PROGRAM_ARGS[@]}" \
 )
 
 # ====================================================================================================
 
-echo "exec $PROGRAM ${PROGRAM_ARGS[*]}" > "$EMU_DIR/entrypoint.sh"
-
-exec bwrap \
-    "${BWRAP_ARGS[@]}" \
-    "--" \
-    "$PROGRAM" \
-    "${PROGRAM_ARGS[@]}"
+echo "exec bwrap ${BWRAP_ARGS[*]}" > "$EMU_DIR/entrypoint.sh"
+exec bwrap "${BWRAP_ARGS[@]}"

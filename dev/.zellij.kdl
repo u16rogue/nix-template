@@ -1,12 +1,17 @@
+keybinds {
+    shared_except "locked" {
+        bind "Alt 1" { GoToTab 1; }
+        bind "Alt 2" { GoToTab 2; }
+        bind "Alt 3" { GoToTab 3; }
+    }
+}
+
 layout {
     default_tab_template {
         pane size=1 split_direction="vertical" {
             pane size=55 borderless=true {
-                plugin location="tab-bar" {
-                    hide_session_name true
-                }
+                plugin location="compact-bar"
             }
-
             pane borderless=true {
                 plugin location="status-bar"
             }
@@ -15,7 +20,9 @@ layout {
     }
 
     tab name=" " focus=true {
-        pane borderless=true start_suspended=true command="nvim"
+        pane name="neovim" borderless=true start_suspended=true command="sh" {
+            args "-c" "if [ -f .nvimsession ]; then exec nvim -S .nvimsession; else exec nvim; fi"
+        }
     }
 
     tab name=" " split_direction="horizontal" {
