@@ -26,7 +26,7 @@ layout {
     }
 
     tab name=" " split_direction="horizontal" {
-        pane /* name="default" start_suspended=true cwd="" command="" {
+        pane start_suspended=true command="$SHELL" /* name="default" cwd="" {
             args ""
         }*/
     }
