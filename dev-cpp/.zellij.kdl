@@ -1,0 +1,39 @@
+keybinds {
+    shared_except "locked" {
+        bind "Alt 1" { GoToTab 1; }
+        bind "Alt 2" { GoToTab 2; }
+        bind "Alt 3" { GoToTab 3; }
+    }
+}
+
+layout {
+    default_tab_template {
+        pane size=1 split_direction="vertical" {
+            pane size=55 borderless=true {
+                plugin location="compact-bar"
+            }
+            pane borderless=true {
+                plugin location="status-bar"
+            }
+        }
+        children
+    }
+
+    tab name=" " focus=true {
+        pane name="neovim" borderless=true start_suspended=true command="sh" {
+            args "-c" "if [ -f .nvimsession ]; then exec nvim -S .nvimsession; else exec nvim; fi"
+        }
+    }
+
+    tab name=" " split_direction="horizontal" {
+        pane start_suspended=true command="$SHELL" /* name="default" cwd="" {
+            args ""
+        }*/
+    }
+
+    tab name="󱚠 " split_direction="horizontal" {
+        pane name="clanker" start_suspended=true command="nix" {
+            args "--extra-experimental-features" "flakes" "--extra-experimental-features" "nix-command" "run" "--inputs-from" "." "nixpkgs#opencode"
+        }
+    }
+}

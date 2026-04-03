@@ -3,9 +3,8 @@
 
     outputs = { self }: {
         templates = {
-            dev = {
-                path = ./dev;
-            };
+            dev.path = ./dev;
+            dev-cpp.path = ./dev-cpp;
         };
     };
 }
