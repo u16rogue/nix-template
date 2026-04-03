@@ -51,6 +51,6 @@ target_compile_options(${PROJECT_NAME}
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-$<$<BOOL:${EXTERNAL_NAME}>:EXTERNAL_NAME="${EXTERNAL_NAME}">
+    $<$<BOOL:${EXTERNAL_NAME}>:EXTERNAL_NAME="${EXTERNAL_NAME}">
     $<$<NOT:$<CONFIG:Debug>>:NDEBUG=1>
 )
