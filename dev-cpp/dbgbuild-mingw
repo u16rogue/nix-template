@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+SOURCE_DIR=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
+BUILD_DIR="$SOURCE_DIR/.build"
+
+#-------------------------------------------------------------------------------
+
+printerr() {
+    echo "[error] $1" >&2
+}
+
+assert_command() {
+    if ! command -v "$1" &> /dev/null; then
+        printerr "command not found: $1"
+        exit 1
+    fi
+}
+
+#-------------------------------------------------------------------------------
+
+assert_command "cmake"
+assert_command "ninja"
+assert_command "x86_64-w64-mingw32-c++"
+
+if [[ ! -f "$SOURCE_DIR/CMakeLists.txt" ]]; then
+    printerr "invalid source directory: $SOURCE_DIR"
+    exit 1
+fi
+
+if [[ ! -f "$BUILD_DIR/CMakeCache.txt" ]]; then
+    if ! cmake "$SOURCE_DIR" -G Ninja -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="$SOURCE_DIR/cmake/x86_64-w64-mingw32.cmake" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON; then
+        printerr "cmake generation failed"
+        exit 1
+    fi
+fi
+
+exec cmake --build "$BUILD_DIR"
