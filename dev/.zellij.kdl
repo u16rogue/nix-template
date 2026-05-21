@@ -19,6 +19,12 @@ layout {
         children
     }
 
+    swap_floating_layout {
+        floating_panes max_panes=1 {
+            pane x="5%" y="5%" width="90%" height="90%"
+        }
+    }
+
     tab name=" " focus=true {
         pane name="neovim" borderless=true start_suspended=true command="sh" {
             args "-c" "if [ -f .nvimsession ]; then exec nvim -S .nvimsession; else exec nvim; fi"
